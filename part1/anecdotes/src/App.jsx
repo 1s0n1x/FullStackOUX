@@ -55,7 +55,7 @@ const App = () => {
   ];
 
   const changeAnecdotes = () => {
-    setSelection(selected + 1);
+    setSelection(Math.floor(Math.random() * anecdotes.length));
   };
   const addVote = () => {
     cVotes[selected] = cVotes[selected] + 1;
