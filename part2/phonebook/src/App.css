@@ -1,0 +1,29 @@
+.notification {
+    background: lightgrey;
+    font-size: 20px;
+    font-style: italic;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.invisible {
+    display: none;
+}
+
+
+.warn {
+    color: yellow;
+    border-color: yellow;
+}
+
+.error {
+    color: red;
+    border-color: red;
+}
+
+.log {
+    color: green;
+    border-color: green;
+}
