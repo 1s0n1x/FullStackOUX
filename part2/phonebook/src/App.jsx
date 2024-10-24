@@ -105,22 +105,23 @@ const App = () => {
             let replacewd = window.confirm(`${name} is already added to phonebook, replace the old number with a new one?`);
             if(replacewd === true){
                 notesReq.updateObj(contactExist.id, { name: contactExist.name, number: number, id: contactExist.id })
-                    .then(() => setNotification({ message: `${name}'s contact has been modified`, type: "log" }))    
+                    .then(() => {
+                        setNotification({ message: `${name}'s contact has been modified`, type: "log" })
+                        contactExist.number = number;
+                        setPersons(cArr);
+                    })    
                     .catch(() => setNotification({ message: `Error: Could not update ${name}'s contact information on the server.`, type: "error" }));
-
-                contactExist.number = number;
-                console.log(cArr);
-                setPersons(cArr);
             }
             clearNotif();
         } else {
-            const newContact = { name: name, number: number, id: `${persons.length + 1}` };
+            const newContact = { name: name, number: number, id: `${number}0${number.length + 1}` };
             notesReq.createObj(newContact)
-                .then(() => setNotification({ message: `Added ${name}`, type: "log" }))
+                .then(() => {
+                    setNotification({ message: `Added ${name}`, type: "log" })
+                    cArr.push(newContact);
+                    setPersons(cArr);
+                })
                 .catch(() => setNotification({ message: `Error: Failed to add ${name} to the server.`, type: "error" }));
-
-            cArr.push(newContact);
-            setPersons(cArr);
             clearNotif();
         }
     };
@@ -130,10 +131,12 @@ const App = () => {
 
         if(wConfirm === true){
             notesReq.deleteObj(id)
-                .then(() => setNotification({ message: `${contactData.name} was successfully removed from the server`, type: "log" }))
+                .then(() => {
+                    setNotification({ message: `${contactData.name} was successfully removed from the server`, type: "log" });
+                    let newArr = cArr.filter(obj => obj.id !== id);
+                    setPersons(newArr);
+                })
                 .catch(() => setNotification({ message: `Error: Failed to remove ${contactData.name} from the server`, type: "error" }));
-            let newArr = cArr.filter(obj => obj.id !== id);
-            setPersons(newArr);
             clearNotif();
         }
     };
