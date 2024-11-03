@@ -70,74 +70,95 @@ app.get("/api/persons", (req, res, next) => {
 app.post("/api/persons", (req, res, next) => {
     if(!req.body.name || !req.body.number) return res.status(400).json({ message: "This request cannot be processed if the name or number is missing." })
 
-    Contacts.find({ name: req.body.name })
-        .then(data => {
-            if(data.length > 0) return res.status(302).json({ message: "This value already exists in the database. You cannot overwrite it this way." });
-            
-            let nContact = new Contacts({ name: req.body.name, number: req.body.number });
-            nContact.save().then(() => {
-                Contacts.find({})
-                    .then(data => {
-                        return res.status(200).json(data);
+    try {
+        Contacts.find({ name: req.body.name })
+            .then(data => {
+                if(data.length > 0) {
+                    return res.status(302).json({ message: "This value already exists in the database. You cannot overwrite it this way." });
+                } else {
+                    let nContact = new Contacts({ name: req.body.name, number: req.body.number });
+                    nContact.save().then(() => {
+                        Contacts.find({})
+                            .then(data => {
+                                return res.status(200).json(data);
+                            })
                     })
-                    .catch(() => next())
+                }
             })
-            .catch(() => next())
-        })
-        .catch(() => next())
+    } catch (error) {
+        next();
+    }
 });
-app.get("/api/persons/:id", (req, res, next) => {
-    if(!req.params.id) return res.status(400).json({ message: "This request cannot be processed if the ID is missing." })
-    Contacts.findOne({ _id: req.params.id })
-        .then(data => {
-            if(!data) return res.status(404).json("This ID could not be found in the database. Please check and try again.");
-            return res.status(200).json(data)
-        }).catch(() => next())
-});
-app.get("/api/persons/:name", (req, res, next) => {
-    if(!req.params.name) return res.status(400).json({ message: "This request cannot be processed if the name is missing." })
-    Contacts.findOne({ name: req.params.name })
-        .then(data => {
-            if(!data) return res.status(404).json({ message: "This name could not be found in the database. Please check and try again." })
-            return res.status(200).json(data);
-        })
-        .catch(() => next());
+app.get("/api/persons/:idorname", (req, res, next) => {
+    if(!req.params.idorname) return res.status(400).json({ message: "This request cannot be processed if the ID is missing." })
+
+    try {
+        if (req.params.idorname.match(/^[0-9a-fA-F]{24}$/)) {
+            return Contacts.findOne({ _id: req.params.idorname })
+                .then(data => {
+                    if(!data) {
+                        return res.status(404).json("This ID could not be found in the database. Please check and try again.");
+                    } else {
+                        return res.status(200).json(data)
+                    }
+                })
+        } else {
+            return Contacts.findOne({ name: req.params.idorname })
+                .then(data => {
+                    if(!data) {
+                        return res.status(404).json({ message: "This name could not be found in the database. Please check and try again." })
+                    } else {
+                        return res.status(200).json(data);
+                    }        
+                })
+        }
+    } catch (error) {
+        next();
+    }
 });
 app.put("/api/persons/:id", (req, res, next) => {
     if(!req.params.id) return res.status(400).json({ message: "This request cannot be processed if the ID is missing." });
 
-    Contacts.findOne({ _id: req.params.id })
-        .then(data  => {
-            if(!data) return res.status(404).json({ message: "This ID could not be found in the database. Please check and try again." });
-            Contacts.findOneAndUpdate({ _id: req.params.id }, { name: req.body.name, number: req.body.number })
-                .then(() => {
-                    Contacts.find({})
-                        .then(tData => {
-                            return res.status(200).json(tData);
+    try {
+        return Contacts.findOne({ _id: req.params.id })
+            .then(data => {
+                if(!data) {
+                    return res.status(404).json({ message: "This ID could not be found in the database. Please check and try again." });
+                } else {
+                    Contacts.findOneAndUpdate({ _id: req.params.id }, { name: req.body.name, number: req.body.number })
+                        .then(() => {
+                            Contacts.find({})
+                                .then(tData => {
+                                    return res.status(200).json(tData);
+                                })
                         })
-                        .catch(() => next());
-                })
-                .catch(() => next());
-        })
-        .catch(() => next())
+                }
+            });
+    } catch (error) {
+        next();
+    }
 });
 app.delete("/api/persons/:id", (req, res, next) => {
     if(!req.params.id) return res.status(400).json({ message: "This request cannot be processed if the id is missing." })
 
-    Contacts.findOne({ _id: req.params.id })
-        .then(data => {
-            if(!data) return res.status(410).json({ message: "Inaccessible item. Cannot be deleted if not found in the database" })
-        })
-
-    Contacts.findByIdAndDelete(req.params.id)
-        .then(() => {
-            Contacts.find({})
-                .then(data => {
-                    return res.status(200).json(data)
-                })
-                .catch(() => next())
-        })
-        .catch(() => next())
+    try {
+        Contacts.findOne({ _id: req.params.id })
+            .then(data => {
+                if(!data){
+                    return res.status(410).json({ message: "Inaccessible item. Cannot be deleted if not found in the database" });
+                } else {
+                    return Contacts.findOneAndDelete({ _id: data.id })
+                        .then(() => {
+                            Contacts.find({})
+                                .then(gData => {
+                                    return res.status(200).json(gData)
+                                })
+                        })
+                }
+            })
+    } catch (error) {
+        next();
+    }
 });
 app.use(unknownEndpoint);
 app.use(errorHandler);
