@@ -6,8 +6,24 @@ const Contacts = require("./models/contacts");
 
 morgan.token('reqData', function (req, res) { return JSON.stringify(req.body) })
 const errorHandler = (error, request, response, next) => {
-    console.error(error);
-    return response.status(500).json({ error: "The server was unable to correctly process this request." })
+    switch (error.name) {
+        case "CastError":
+            response.status(400).json({ message: "An error occurred. The request ID is malformed, please check and try again." })
+            break; 
+        case "ValidationError":
+            let messages = [];
+
+            Object.keys(error.errors)
+                .forEach((v) => {
+                    messages.push(error.errors[v].message);
+                })
+
+            response.status(400).json({ message: messages });
+            break;
+        default:
+            response.status(500).json({ message: "The server was unable to correctly process this request." });
+            break;
+    }
 };
 const unknownEndpoint = (req, res) => {
     res.status(404).json({ message: "Route not found. Please check your request." })
@@ -58,35 +74,41 @@ app.get("/info", (req, res, next) => {
                 </p>    
             `)
         })
-        .catch(() => next())
+        .catch(err => next(err))
 });
 app.get("/api/persons", (req, res, next) => {
     Contacts.find({})
         .then(data => {
             return res.status(200).json(data);
         })
-        .catch(err => next())
+        .catch(err => next(err))
 });
 app.post("/api/persons", (req, res, next) => {
-    if(!req.body.name || !req.body.number) return res.status(400).json({ message: "This request cannot be processed if the name or number is missing." })
+    //if(!req.body.name || !req.body.number) return res.status(400).json({ message: "This request cannot be processed if the name or number is missing." })
 
     try {
-        Contacts.find({ name: req.body.name })
+        Contacts.findOne({ name: req.body.name })
             .then(data => {
-                if(data.length > 0) {
+                if(data) {
                     return res.status(302).json({ message: "This value already exists in the database. You cannot overwrite it this way." });
                 } else {
                     let nContact = new Contacts({ name: req.body.name, number: req.body.number });
-                    nContact.save().then(() => {
-                        Contacts.find({})
-                            .then(data => {
-                                return res.status(200).json(data);
-                            })
-                    })
+                    let errValidate = nContact.validateSync();
+
+                    if(!errValidate) {
+                        nContact.save().then(() => {
+                            Contacts.find({})
+                                .then(dataF => {
+                                    return res.status(200).json(dataF);
+                                })
+                        })
+                    } else {
+                        next(errValidate);
+                    }
                 }
             })
     } catch (error) {
-        next();
+        next(error);
     }
 });
 app.get("/api/persons/:idorname", (req, res, next) => {
@@ -113,7 +135,7 @@ app.get("/api/persons/:idorname", (req, res, next) => {
                 })
         }
     } catch (error) {
-        next();
+        next(error);
     }
 });
 app.put("/api/persons/:id", (req, res, next) => {
@@ -125,17 +147,22 @@ app.put("/api/persons/:id", (req, res, next) => {
                 if(!data) {
                     return res.status(404).json({ message: "This ID could not be found in the database. Please check and try again." });
                 } else {
-                    Contacts.findOneAndUpdate({ _id: req.params.id }, { name: req.body.name, number: req.body.number })
+                    Contacts.findByIdAndUpdate(
+                        req.params.id, { number: req.body.number },
+                        { new: true, runValidators: true, context: 'query' }
+                    )
                         .then(() => {
                             Contacts.find({})
                                 .then(tData => {
                                     return res.status(200).json(tData);
                                 })
+                        }, err => {
+                            next(err)
                         })
                 }
             });
     } catch (error) {
-        next();
+        next(error);
     }
 });
 app.delete("/api/persons/:id", (req, res, next) => {
@@ -157,7 +184,7 @@ app.delete("/api/persons/:id", (req, res, next) => {
                 }
             })
     } catch (error) {
-        next();
+        next(error);
     }
 });
 app.use(unknownEndpoint);
