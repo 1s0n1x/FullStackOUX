@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
-require('dotenv').config();
+require('dotenv').config()
 
-const url = process.env.MONGODB_URI;
-console.log('connecting to', url);
+const url = process.env.MONGODB_URI
+console.log('connecting to', url)
 
 mongoose.set('strictQuery', false)
 mongoose.connect(url)
@@ -14,21 +14,21 @@ const contactSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: function (v) {
-        return v.split(" ").join("").length >= 3
+        return v.split(' ').join('').length >= 3
       },
       message: props => `${props.value} is too short a contact name! It must be a name with at least 3 characters.`
     },
-    required: [true, `Contact name is required.`]
+    required: [true, 'Contact name is required.']
   },
   number: {
     type: String,
     validate: {
       validator: function (v) {
-        return /^\d{2,3}-\d{5,}$/.test(v);
+        return /^\d{2,3}-\d{5,}$/.test(v)
       },
       message: props => `${props.value} is not a valid contact number!`
     },
-    required: [true, `Contact number is required.`]
+    required: [true, 'Contact number is required.']
   }
 })
 
