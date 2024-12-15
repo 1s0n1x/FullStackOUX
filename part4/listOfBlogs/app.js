@@ -1,0 +1,27 @@
+const express = require(`express`);
+const mongoose = require(`mongoose`);
+const cors = require("cors");
+
+const { info, error } = require(`./utils/logger`);
+const { MONGODB_URI } = require(`./utils/config`);
+const { errorHandler, requestLogger, unknownEndpoint } = require(`./utils/middleware`);
+
+const blogsRouter = require(`./controllers/blogs`);
+info(`Connecting to ${MONGODB_URI}`)
+
+mongoose.set('strictQuery', false)
+mongoose.connect(MONGODB_URI)
+  .then(() => info('Connected to MongoDB'))
+  .catch(err => error(err))
+
+
+const server = express();
+server.use(cors());
+server.use(express.json());
+server.use(requestLogger)
+
+server.use(`/api/blogs`, blogsRouter)
+server.use(unknownEndpoint);
+server.use(errorHandler);
+
+module.exports = server;

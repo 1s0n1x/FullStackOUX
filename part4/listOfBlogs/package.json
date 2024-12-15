@@ -1,0 +1,18 @@
+{
+  "name": "listofblogs",
+  "version": "1.0.0",
+  "description": "Developed by Isonix Development & 1s0n1x // Test of Open University",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./index.js"
+  },
+  "author": "1s0n1x (BackEnd Developer)",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.1",
+    "mongoose": "^8.9.0",
+    "nodemon": "^3.1.7"
+  }
+}
