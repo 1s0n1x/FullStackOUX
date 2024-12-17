@@ -4,7 +4,8 @@
   "description": "Developed by Isonix Development & 1s0n1x // Test of Open University",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./index.js"
+    "start": "nodemon ./index.js",
+    "test": "node --test"
   },
   "author": "1s0n1x (BackEnd Developer)",
   "license": "ISC",

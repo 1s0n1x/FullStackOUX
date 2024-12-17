@@ -7,7 +7,7 @@ const { MONGODB_URI } = require(`./utils/config`);
 const { errorHandler, requestLogger, unknownEndpoint } = require(`./utils/middleware`);
 
 const blogsRouter = require(`./controllers/blogs`);
-info(`Connecting to ${MONGODB_URI}`)
+info(`Connecting to MongoDB`)
 
 mongoose.set('strictQuery', false)
 mongoose.connect(MONGODB_URI)
