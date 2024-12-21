@@ -1,7 +1,9 @@
-let path = require("path")
+const { ENVIRONMENT } = require(`./config`);
 
 class Logger {
     static info (data) {
+        if(ENVIRONMENT === "test") return;
+
         function printLn (line) {
             const now = new Date(); 
             
@@ -27,11 +29,10 @@ class Logger {
         }
     }
 
-    /**
-     * 
-     * @param {Error} data 
-     */
     static error (data) {
+        if(ENVIRONMENT === "test") return;
+        if(typeof data === "string") return printLn(data);
+
         function printLn (line) {
             const now = new Date(); 
             

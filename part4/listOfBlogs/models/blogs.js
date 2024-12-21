@@ -7,25 +7,26 @@ const blogSchema = new mongoose.Schema({
         type: String,
         validate: {
             validator: function (v) {
-                return v.split(' ').join('').length >= 3;
+                return v.split(' ').join('').length >= 0;
             },
-            message: props => `"${props.value}" is too short a blog name! It must be a name with at least 3 characters.`
+            message: props => `"${props.value}" is not a valid title! It must contain at least one non-space character.`
         },
-        required: [true, 'Blog name is required.']
+        required: [true, 'Blog title is required.']
     },
     author: {
         type: String,
-        validate: {
-            validator: function (v) {
-                return v.split(' ').join('').length >= 3;
-            },
-            message: props => `"${props.value}" is too short for author name. It must be a name with at least 3 characters.`
-        },
-        required: [true, 'Blog author is required.']
+        default: 'Not provided.'
     },
     url: {
         type: String,
-        default: "Not defined."
+        validate: {
+            validator: function (v) {
+                const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+                return urlRegex.test(v);
+            },
+            message: props => `"${props.value}" is not a valid URL!`
+        },
+        required: [true, 'Blog URL is required.']
     },
     likes: {
         type: Number, 

@@ -1,9 +1,11 @@
+require('express-async-errors')
+
 const express = require(`express`);
 const mongoose = require(`mongoose`);
 const cors = require("cors");
 
 const { info, error } = require(`./utils/logger`);
-const { MONGODB_URI } = require(`./utils/config`);
+const { MONGODB_URI, ENVIRONMENT } = require(`./utils/config`);
 const { errorHandler, requestLogger, unknownEndpoint } = require(`./utils/middleware`);
 
 const blogsRouter = require(`./controllers/blogs`);
@@ -11,7 +13,7 @@ info(`Connecting to MongoDB`)
 
 mongoose.set('strictQuery', false)
 mongoose.connect(MONGODB_URI)
-  .then(() => info('Connected to MongoDB'))
+  .then(() => info(`Connected to MongoDB in ${ENVIRONMENT} mode`))
   .catch(err => error(err))
 
 

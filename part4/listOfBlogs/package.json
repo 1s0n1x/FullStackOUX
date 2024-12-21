@@ -4,16 +4,22 @@
   "description": "Developed by Isonix Development & 1s0n1x // Test of Open University",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./index.js",
-    "test": "node --test"
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "test": "cross-env NODE_ENV=test node --test"
   },
   "author": "1s0n1x (BackEnd Developer)",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
+    "express-async-errors": "^3.1.1",
     "mongoose": "^8.9.0",
     "nodemon": "^3.1.7"
+  },
+  "devDependencies": {
+    "supertest": "^7.0.0"
   }
 }
