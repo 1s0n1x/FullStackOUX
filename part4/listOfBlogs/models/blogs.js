@@ -17,6 +17,10 @@ const blogSchema = new mongoose.Schema({
         type: String,
         default: 'Not provided.'
     },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     url: {
         type: String,
         validate: {
