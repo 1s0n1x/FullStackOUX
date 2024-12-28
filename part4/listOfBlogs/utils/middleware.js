@@ -12,7 +12,7 @@ const requestLogger = (req, res, next) => {
 }
 
 const tokenExtractor = (req, res, next) => {
-    const authorization = req.get('authorization');
+    const authorization = req.get('Authorization');
     if (authorization && authorization.toLowerCase().startsWith('bearer')) {
         req.token = authorization.substring(7); // Remueve "bearer " y guarda el token
     } else {

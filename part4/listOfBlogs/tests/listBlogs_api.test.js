@@ -50,7 +50,7 @@ describe('When there are initially some blogs saved', () => {
                     author: "1s0n1x Development",
                     url: "https://localhost:3000"
                 })
-                .set({ authorization: `Bearer ${userLogin.body.token}` })
+                .set({ Authorization: `Bearer ${userLogin.body.token}` })
             await api
                 .post("/api/blogs")
                 .send({
@@ -58,7 +58,7 @@ describe('When there are initially some blogs saved', () => {
                     author: "1s0n1x Development",
                     url: "https://localhost:3000"
                 })
-                .set({ authorization: `Bearer ${userLogin.body.token}` })
+                .set({ Authorization: `Bearer ${userLogin.body.token}` })
             let blogAfter = await api
                 .get("/api/blogs")
                 .expect(200)
@@ -84,7 +84,7 @@ describe('When there are initially some blogs saved', () => {
                     author: "1s0n1x Development",
                     url: "https://localhost:3000"
                 })
-                .set({ authorization: `Bearer ${userLogin.body.token}` })
+                .set({ Authorization: `Bearer ${userLogin.body.token}` })
                 .expect(201)
                 .expect('Content-Type', /application\/json/);
         
@@ -108,7 +108,7 @@ describe('When there are initially some blogs saved', () => {
                     author: "1s0n1x Development",
                     url: "https://localhost:3000"
                 })
-                .set({ authorization: `Bearer ${userLogin.body.token}` })
+                .set({ Authorization: `Bearer ${userLogin.body.token}` })
                 .expect(400)
                 .expect('Content-Type', /application\/json/);
         
@@ -119,7 +119,7 @@ describe('When there are initially some blogs saved', () => {
                     title: "Request for dummies",
                     author: "1s0n1x Development"
                 })
-                .set({ authorization: `Bearer ${userLogin.body.token}` })
+                .set({ Authorization: `Bearer ${userLogin.body.token}` })
                 .expect(400)
                 .expect('Content-Type', /application\/json/);
         });    
