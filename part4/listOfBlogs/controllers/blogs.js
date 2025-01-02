@@ -32,7 +32,7 @@ blogsRouter.delete(`/:id`, userExtractor, async (req, res) => {
         await userReq.save();
         res.status(204).end();
     } else {
-        res.status(401).json({ error: 'unauthorized' });
+        res.status(401).json({ message: 'unauthorized' });
     }
 });
 blogsRouter.put(`/:id`, userExtractor, async (req, res) => {
@@ -41,7 +41,7 @@ blogsRouter.put(`/:id`, userExtractor, async (req, res) => {
         let blogUpdated = await Blog.findByIdAndUpdate(req.params.id, { ...req.body }, { new: true });
         res.status(200).json(blogUpdated);
     } else {
-        res.status(401).json({ error: 'unauthorized' });
+        res.status(401).json({ message: 'unauthorized' });
     }
 });
 

@@ -24,7 +24,7 @@ const tokenExtractor = (req, res, next) => {
 const userExtractor = (req, res, next) => {
     const decodedToken = jwt.verify(req.token, process.env.SECRET)
     if (!decodedToken.id) {
-        return res.status(401).json({ error: 'token invalid' })
+        return res.status(401).json({ message: 'token invalid' })
     } else {
         req.user = decodedToken.id;
     }
@@ -55,7 +55,7 @@ const errorHandler = (err, req, res, next) => {
             });
             break;
         case 'TokenExpiredError':
-            return res.status(401).json({
+            res.status(401).json({
                 message: 'token expired'
             })
             break;
